@@ -1,0 +1,26 @@
+{
+	"name": "Cruddur",
+	"image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+	"features": {
+		"ghcr.io/devcontainers/features/python": {},
+		"ghcr.io/devcontainers/features/node": {}
+	},
+	"forwardPorts": [3000, 4567],
+	"portsAttributes": {
+		"3000": {
+			"label": "Frontend (React)",
+			"onAutoForward": "notify"
+		},
+		"4567": {
+			"label": "Backend (Flask)",
+			"onAutoForward": "notify"
+		}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"42Crunch.vscode-openapi"
+			]
+		}
+	}
+}

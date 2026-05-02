@@ -1,0 +1,38 @@
+tasks:
+  installBackend:
+    name: Install backend dependencies
+    description: Install Python dependencies for the Flask backend.
+    command: |
+      pip install -r backend-flask/requirements.txt
+    triggeredBy:
+      - postDevcontainerStart
+
+  installFrontend:
+    name: Install frontend dependencies
+    description: Install Node.js dependencies for the React frontend.
+    command: |
+      npm install --prefix frontend-react-js
+    triggeredBy:
+      - postDevcontainerStart
+
+services:
+  backend:
+    name: Flask Backend
+    description: Flask API server on port 4567.
+    commands:
+      start: |
+        export FRONTEND_URL="$(ona env port list -o=json | jq -r '.[] | select(.port == 3000) | .url' 2>/dev/null || echo 'http://localhost:3000')"
+        export BACKEND_URL="$(ona env port list -o=json | jq -r '.[] | select(.port == 4567) | .url' 2>/dev/null || echo 'http://localhost:4567')"
+        cd backend-flask && python -m flask run --host=0.0.0.0 --port=4567
+      ready: |
+        curl -sf http://localhost:4567/api/activities/home
+
+  frontend:
+    name: React Frontend
+    description: React development server on port 3000.
+    commands:
+      start: |
+        export REACT_APP_BACKEND_URL="$(ona env port list -o=json | jq -r '.[] | select(.port == 4567) | .url' 2>/dev/null || echo 'http://localhost:4567')"
+        npm start --prefix frontend-react-js
+      ready: |
+        curl -sf http://localhost:3000
